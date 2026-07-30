@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flügelhorn Companion – B♭ Transposition &amp; Skalen</title>
+<style>
+  :root {
+    --bg-primary: #0f1117;
+    --bg-secondary: #1a1d27;
+    --bg-card: #232733;
+    --bg-card-hover: #2a2f3d;
+    --accent: #f0a030;
+    --accent-dim: #c07820;
+    --accent-glow: rgba(240,160,48,0.15);
+    --text-primary: #e8e6e1;
+    --text-secondary: #9a9a9a;
+    --text-dim: #666;
+    --border: #2e3345;
+    --success: #4ecdc4;
+    --danger: #ff6b6b;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --shadow: 0 4px 24px rgba(0,0,0,0.4);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    line-height: 1.5;
+  }
+
+  .app-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px 16px 60px;
+  }
+
+  /* ── Header ── */
+  .app-header {
+    text-align: center;
+    padding: 32px 0 24px;
+  }
+  .app-header h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: -0.5px;
+  }
+  .app-header .subtitle {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-top: 4px;
+  }
+  .app-header .horn-icon {
+    font-size: 2.8rem;
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  /* ── Selector Panel ── */
+  .selector-panel {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+  }
+  .selector-panel label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+  }
+  .key-selector-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .key-selector-row select {
+    flex: 1;
+    min-width: 200px;
+    padding: 12px 16px;
+    font-size: 1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg-card);
+    color: var(--text-primary);
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239a9a9a' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+    transition: border-color 0.2s;
+  }
+  .key-selector-row select:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  /* ── Transposition Info ── */
+  .transposition-info {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    box-shadow: var(--shadow);
+  }
+  .trans-box {
+    flex: 1;
+    min-width: 140px;
+    text-align: center;
+  }
+  .trans-box .label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+  }
+  .trans-box .value {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .trans-arrow {
+    font-size: 1.6rem;
+    color: var(--text-dim);
+    flex-shrink: 0;
+  }
+
+  /* ── Scale Tabs ── */
+  .scale-tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .scale-tab {
+    padding: 10px 20px;
+    border: 1px solid var(--border);
+    border-radius: 30px;
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .scale-tab:hover {
+    background: var(--bg-card);
+    color: var(--text-primary);
+  }
+  .scale-tab.active {
+    background: var(--accent);
+    color: #111;
+    border-color: var(--accent);
+  }
+
+  /* ── Scale Info Bar ── */
+  .scale-info-bar {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 24px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .scale-info-bar .scale-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+  .scale-info-bar .scale-desc {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+  }
+
+  /* ── Note Cards Grid ── */
+  .notes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .note-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 12px;
+    text-align: center;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .note-card:hover {
+    background: var(--bg-card-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+  }
+  .note-card .note-name {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+  .note-card .note-degree {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+  }
+  .note-card .valve-display {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+  .valve-piston {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--text-dim);
+    background: var(--bg-primary);
+    transition: all 0.3s;
+  }
+  .valve-piston.pressed {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #111;
+    box-shadow: 0 0 10px var(--accent-glow);
+  }
+  .note-card .valve-text {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-family: 'Courier New', monospace;
+  }
+
+  /* ── Quick Reference Table ── */
+  .ref-section {
+    margin-top: 32px;
+  }
+  .ref-section h2 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .ref-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+  .ref-table th {
+    text-align: left;
+    padding: 10px 12px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-secondary);
+    border-bottom: 2px solid var(--border);
+    background: var(--bg-secondary);
+    position: sticky;
+    top: 0;
+  }
+  .ref-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  .ref-table tr:hover td {
+    background: var(--bg-card);
+  }
+  .ref-table .note-col {
+    font-weight: 700;
+    color: var(--accent);
+    font-size: 1rem;
+  }
+  .ref-table .valve-col {
+    font-family: 'Courier New', monospace;
+    font-weight: 600;
+    color: var(--success);
+  }
+  .table-wrapper {
+    overflow-x: auto;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+  }
+
+  /* ── All Keys Overview ── */
+  .overview-section {
+    margin-top: 32px;
+  }
+  .overview-section h2 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .overview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+  }
+  .overview-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .overview-card:hover {
+    background: var(--bg-card-hover);
+    border-color: var(--accent-dim);
+  }
+  .overview-card .ov-key {
+    font-weight: 700;
+    color: var(--accent);
+    font-size: 1rem;
+    margin-bottom: 2px;
+  }
+  .overview-card .ov-trans {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+  }
+  .overview-card .ov-notes {
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    line-height: 1.4;
+  }
+
+  /* ── Footer ── */
+  .app-footer {
+    text-align: center;
+    padding: 32px 0 16px;
+    color: var(--text-dim);
+    font-size: 0.8rem;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 600px) {
+    .app-header h1 { font-size: 1.4rem; }
+    .notes-grid { grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 8px; }
+    .note-card { padding: 12px 8px; }
+    .note-card .note-name { font-size: 1.25rem; }
+    .valve-piston { width: 24px; height: 24px; font-size: 0.6rem; }
+    .transposition-info { padding: 16px; gap: 12px; }
+    .trans-box .value { font-size: 1.1rem; }
+    .selector-panel { padding: 16px; }
+    .scale-tab { padding: 8px 14px; font-size: 0.82rem; }
+  }
+
+  /* ── Animations ── */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .note-card { animation: fadeIn 0.3s ease both; }
+  .note-card:nth-child(1) { animation-delay: 0.02s; }
+  .note-card:nth-child(2) { animation-delay: 0.04s; }
+  .note-card:nth-child(3) { animation-delay: 0.06s; }
+  .note-card:nth-child(4) { animation-delay: 0.08s; }
+  .note-card:nth-child(5) { animation-delay: 0.10s; }
+  .note-card:nth-child(6) { animation-delay: 0.12s; }
+  .note-card:nth-child(7) { animation-delay: 0.14s; }
+  .note-card:nth-child(8) { animation-delay: 0.16s; }
+  .note-card:nth-child(9) { animation-delay: 0.18s; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: var(--bg-primary); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }
+</style>
+</head>
+<body>
+<div class="app-container">
+
+  <!-- Header -->
+  <header class="app-header">
+    <span class="horn-icon">🎵</span>
+    <h1>Flügelhorn Companion</h1>
+    <p class="subtitle">B♭-Transposition · Skalen · Griffweisen</p>
+  </header>
+
+  <!-- Key Selector -->
+  <div class="selector-panel">
+    <label>🎹 Backing-Track Tonart (Klingend)</label>
+    <div class="key-selector-row">
+      <select id="keySelect"></select>
+    </div>
+  </div>
+
+  <!-- Transposition Display -->
+  <div class="transposition-info" id="transInfo">
+    <div class="trans-box">
+      <div class="label">Klingend (YouTube)</div>
+      <div class="value" id="concertKey">–</div>
+    </div>
+    <div class="trans-arrow">➜</div>
+    <div class="trans-box">
+      <div class="label">B♭ Flügelhorn (Transponiert)</div>
+      <div class="value" id="transposedKey">–</div>
+    </div>
+  </div>
+
+  <!-- Scale Tabs -->
+  <div class="scale-tabs" id="scaleTabs">
+    <button class="scale-tab active" data-scale="minorPentatonic">Moll-Pentatonik</button>
+    <button class="scale-tab" data-scale="blues">Blues-Skala</button>
+    <button class="scale-tab" data-scale="major">Dur-Skala</button>
+  </div>
+
+  <!-- Scale Info -->
+  <div class="scale-info-bar">
+    <span class="scale-name" id="scaleName">–</span>
+    <span class="scale-desc" id="scaleDesc"></span>
+  </div>
+
+  <!-- Note Cards -->
+  <div class="notes-grid" id="notesGrid"></div>
+
+  <!-- Quick Reference: Valve Chart -->
+  <div class="ref-section">
+    <h2>📋 Ventiltabelle – B♭ Flügelhorn (Mittelregister)</h2>
+    <div class="table-wrapper">
+      <table class="ref-table" id="valveTable">
+        <thead>
+          <tr>
+            <th>Note</th>
+            <th>Ventile</th>
+            <th>Grafisch</th>
+          </tr>
+        </thead>
+        <tbody id="valveTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- All Keys Overview -->
+  <div class="overview-section">
+    <h2>🌍 Alle Tonarten auf einen Blick</h2>
+    <div class="overview-grid" id="overviewGrid"></div>
+  </div>
+
+  <footer class="app-footer">
+    Flügelhorn Companion – B♭ Transposition &amp; Skalen-Helfer
+  </footer>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+//  DATA
+// ═══════════════════════════════════════════
+
+// 12 semitones with German names and valve combinations (standard B♭ Flügelhorn)
+// Valve combos from user spec: C=0 D=1-3 Eb=2-3 E=1-2 F=1 F#=2 G=0 Ab=2-3 A=1-2 Bb=1 H=2
+// Chromatic fill: Cis=0-3  Fis=2-3  Gis=0-3
+const NOTES = [
+  { midi: 0,  name: 'C',  alt: '',       valve: '0' },
+  { midi: 1,  name: 'Cis', alt: 'Des',   valve: '0-3' },
+  { midi: 2,  name: 'D',  alt: '',       valve: '1-3' },
+  { midi: 3,  name: 'Dis', alt: 'Es',    valve: '2-3' },
+  { midi: 4,  name: 'E',  alt: '',       valve: '1-2' },
+  { midi: 5,  name: 'F',  alt: '',       valve: '1' },
+  { midi: 6,  name: 'Fis', alt: 'Ges',   valve: '2-3' },
+  { midi: 7,  name: 'G',  alt: '',       valve: '0' },
+  { midi: 8,  name: 'Gis', alt: 'As',    valve: '0-3' },
+  { midi: 9,  name: 'A',  alt: '',       valve: '1-2' },
+  { midi: 10, name: 'B',  alt: 'B♭',     valve: '1' },
+  { midi: 11, name: 'H',  alt: 'B',      valve: '2' },
+];
+
+// Keys: each has major and relative minor
+const KEYS = [
+  { major: 'C-Dur',    minor: 'A-Moll',  rootMidi: 0 },
+  { major: 'Cis-Dur',  minor: 'His-Moll', rootMidi: 1 },
+  { major: 'Des-Dur',  minor: 'B-Moll',  rootMidi: 1 },
+  { major: 'D-Dur',    minor: 'H-Moll',  rootMidi: 2 },
+  { major: 'Dis-Dur',  minor: 'C-Moll',  rootMidi: 3 },
+  { major: 'Es-Dur',   minor: 'C-Moll',  rootMidi: 3 },
+  { major: 'E-Dur',    minor: 'Cis-Moll',rootMidi: 4 },
+  { major: 'F-Dur',    minor: 'D-Moll',  rootMidi: 5 },
+  { major: 'Fis-Dur',  minor: 'Dis-Moll',rootMidi: 6 },
+  { major: 'Ges-Dur',  minor: 'Es-Moll', rootMidi: 6 },
+  { major: 'G-Dur',    minor: 'E-Moll',  rootMidi: 7 },
+  { major: 'Gis-Dur',  minor: 'F-Moll',  rootMidi: 8 },
+  { major: 'As-Dur',   minor: 'F-Moll',  rootMidi: 8 },
+  { major: 'A-Dur',    minor: 'Fis-Moll',rootMidi: 9 },
+  { major: 'B-Dur',    minor: 'G-Moll',  rootMidi: 10 },
+  { major: 'H-Dur',    minor: 'Gis-Moll',rootMidi: 11 },
+  { major: 'C-Dur',    minor: 'A-Moll',  rootMidi: 12 }, // wrap
+];
+
+// Scale interval patterns (semitones from root)
+const SCALES = {
+  minorPentatonic: {
+    label: 'Moll-Pentatonik',
+    desc: 'Ideal für Blues- und Rock-Solos – 5 Noten, universell einsetzbar',
+    intervals: [0, 3, 5, 7, 10],
+    degrees: ['1', 'b3', '4', '5', 'b7']
+  },
+  blues: {
+    label: 'Blues-Skala',
+    desc: 'Moll-Pentatonik + verminderte Quinte (b5) – der klassische Blues-Sound',
+    intervals: [0, 3, 5, 6, 7, 10],
+    degrees: ['1', 'b3', '4', 'b5', '5', 'b7']
+  },
+  major: {
+    label: 'Dur-Skala',
+    desc: 'Vollständige Dur-Skala – 7 Töne, hell und klar',
+    intervals: [0, 2, 4, 5, 7, 9, 11],
+    degrees: ['1', '2', '3', '4', '5', '6', '7']
+  }
+};
+
+// Degree names for display
+const DEGREE_NAMES = {
+  '1': 'Grundton',
+  'b1': 'Grundton',
+  '2': 'Große Sekunde',
+  '3': 'Große Terz',
+  'b3': 'Kleine Terz',
+  '4': 'Quarte',
+  'b5': 'Vermind. Quinte',
+  '5': 'Quinte',
+  '6': 'Große Sexte',
+  '7': 'Große Septime',
+  'b7': 'Kleine Septime'
+};
+
+// ═══════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════
+
+let selectedKeyIndex = 0;
+let selectedScale = 'minorPentatonic';
+
+// ═══════════════════════════════════════════
+//  HELPERS
+// ═══════════════════════════════════════════
+
+function getNoteByMidi(midi) {
+  return NOTES[((midi % 12) + 12) % 12];
+}
+
+function transposeUpWholeStep(midi) {
+  return (midi + 2) % 12;
+}
+
+// Determine the effective root midi for the selected scale type.
+// Minor scales (minorPentatonic, blues) use the relative minor root;
+// major scale uses the major root.
+function getEffectiveRootMidi(keyIndex) {
+  const key = KEYS[keyIndex];
+  if (selectedScale === 'major') return key.rootMidi;
+  // minor pentatonic / blues → use relative minor root (rootMidi + 9, mod 12)
+  return (key.rootMidi + 9) % 12;
+}
+
+// Get the name of the transposed key (major or minor label)
+function getTransposedKeyName(keyIndex) {
+  const effectiveRoot = getEffectiveRootMidi(keyIndex);
+  const transRoot = transposeUpWholeStep(effectiveRoot);
+  const transKey = KEYS.find(k => k.rootMidi % 12 === transRoot);
+  if (!transKey) return null;
+  return selectedScale === 'major' ? transKey.major : transKey.minor;
+}
+
+function getScaleNotes(rootMidi, scaleKey) {
+  const scale = SCALES[scaleKey];
+  return scale.intervals.map((interval, i) => ({
+    midi: (rootMidi + interval) % 12,
+    note: getNoteByMidi(rootMidi + interval),
+    degree: scale.degrees[i],
+    degreeName: DEGREE_NAMES[scale.degrees[i]] || scale.degrees[i]
+  }));
+}
+
+function parseValve(valveStr) {
+  if (valveStr === '0') return [false, false, false];
+  const nums = valveStr.split('-').map(n => parseInt(n));
+  const pistons = [false, false, false];
+  nums.forEach(n => { if (n >= 1 && n <= 3) pistons[n-1] = true; });
+  return pistons;
+}
+
+// ═══════════════════════════════════════════
+//  RENDER
+// ═══════════════════════════════════════════
+
+function renderKeySelector() {
+  const sel = document.getElementById('keySelect');
+  sel.innerHTML = '';
+  // Show unique keys (avoid duplicates), but map option value back to original KEYS index
+  const seen = new Set();
+  KEYS.forEach((k, i) => {
+    const id = k.major + '/' + k.minor;
+    if (seen.has(id)) return;
+    seen.add(id);
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = `${k.major} / ${k.minor}`;
+    sel.appendChild(opt);
+  });
+  sel.value = selectedKeyIndex;
+}
+
+function renderTransposition() {
+  const key = KEYS[selectedKeyIndex];
+  const effectiveRoot = getEffectiveRootMidi(selectedKeyIndex);
+  const transRootMidi = transposeUpWholeStep(effectiveRoot);
+  const transNote = getNoteByMidi(transRootMidi);
+
+  const transKeyName = getTransposedKeyName(selectedKeyIndex);
+
+  document.getElementById('concertKey').textContent = key.major + ' / ' + key.minor;
+  document.getElementById('transposedKey').textContent = transKeyName || `${transNote.name}`;
+}
+
+function renderScaleInfo() {
+  const effectiveRoot = getEffectiveRootMidi(selectedKeyIndex);
+  const transRootMidi = transposeUpWholeStep(effectiveRoot);
+  const transNote = getNoteByMidi(transRootMidi);
+  const scale = SCALES[selectedScale];
+
+  document.getElementById('scaleName').textContent =
+    `${transNote.name} ${scale.label}`;
+  document.getElementById('scaleDesc').textContent =
+    `${scale.desc} · ${scale.intervals.length} Töne`;
+}
+
+function renderNoteCards() {
+  const effectiveRoot = getEffectiveRootMidi(selectedKeyIndex);
+  const transRootMidi = transposeUpWholeStep(effectiveRoot);
+  const scaleNotes = getScaleNotes(transRootMidi, selectedScale);
+
+  const grid = document.getElementById('notesGrid');
+  grid.innerHTML = '';
+
+  scaleNotes.forEach(sn => {
+    const card = document.createElement('div');
+    card.className = 'note-card';
+
+    const pistons = parseValve(sn.note.valve);
+
+    card.innerHTML = `
+      <div class="note-name">${sn.note.name}</div>
+      <div class="note-degree">${sn.degreeName}</div>
+      <div class="valve-display">
+        <div class="valve-piston ${pistons[0] ? 'pressed' : ''}">1</div>
+        <div class="valve-piston ${pistons[1] ? 'pressed' : ''}">2</div>
+        <div class="valve-piston ${pistons[2] ? 'pressed' : ''}">3</div>
+      </div>
+      <div class="valve-text">${sn.note.valve}</div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function renderValveTable() {
+  const tbody = document.getElementById('valveTableBody');
+  tbody.innerHTML = '';
+
+  NOTES.forEach(n => {
+    const pistons = parseValve(n.valve);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="note-col">${n.name}${n.alt ? ' (' + n.alt + ')' : ''}</td>
+      <td class="valve-col">${n.valve}</td>
+      <td>
+        <span style="display:inline-flex;gap:4px;">
+          <span class="valve-piston ${pistons[0]?'pressed':''}" style="width:22px;height:22px;font-size:0.6rem;display:inline-flex;">1</span>
+          <span class="valve-piston ${pistons[1]?'pressed':''}" style="width:22px;height:22px;font-size:0.6rem;display:inline-flex;">2</span>
+          <span class="valve-piston ${pistons[2]?'pressed':''}" style="width:22px;height:22px;font-size:0.6rem;display:inline-flex;">3</span>
+        </span>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function renderOverview() {
+  const grid = document.getElementById('overviewGrid');
+  grid.innerHTML = '';
+
+  const seen = new Set();
+  KEYS.forEach((k, idx) => {
+    const id = k.major + '/' + k.minor;
+    if (seen.has(id)) return;
+    seen.add(id);
+
+    // Use relative minor root for pentatonic overview
+    const minorRootMidi = (k.rootMidi + 9) % 12;
+    const transRootMidi = transposeUpWholeStep(minorRootMidi);
+    const transNote = getNoteByMidi(transRootMidi);
+    const transKey = KEYS.find(kk => kk.rootMidi % 12 === transRootMidi);
+    const scaleNotes = getScaleNotes(transRootMidi, 'minorPentatonic');
+    const noteNames = scaleNotes.map(sn => sn.note.name).join(' – ');
+    const valveStrs = scaleNotes.map(sn => `(${sn.note.valve})`).join(' ');
+
+    const card = document.createElement('div');
+    card.className = 'overview-card';
+    card.onclick = () => {
+      selectedKeyIndex = idx;
+      document.getElementById('keySelect').value = idx;
+      renderAll();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+    card.innerHTML = `
+      <div class="ov-key">${k.major} / ${k.minor}</div>
+      <div class="ov-trans">Transponiert: ${transKey ? transKey.minor : transNote.name + '-Moll'}</div>
+      <div class="ov-notes">${transNote.name}-Moll Pentatonik: ${noteNames}<br>Ventile: ${valveStrs}</div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function renderAll() {
+  renderTransposition();
+  renderScaleInfo();
+  renderNoteCards();
+}
+
+// ═══════════════════════════════════════════
+//  EVENTS
+// ═══════════════════════════════════════════
+
+document.getElementById('keySelect').addEventListener('change', function() {
+  selectedKeyIndex = parseInt(this.value);
+  renderAll();
+});
+
+document.querySelectorAll('.scale-tab').forEach(tab => {
+  tab.addEventListener('click', function() {
+    document.querySelectorAll('.scale-tab').forEach(t => t.classList.remove('active'));
+    this.classList.add('active');
+    selectedScale = this.dataset.scale;
+    renderAll();
+  });
+});
+
+// ═══════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════
+
+renderKeySelector();
+renderValveTable();
+renderOverview();
+renderAll();
+</script>
+</body>
+</html>
