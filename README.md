@@ -7,7 +7,7 @@
 [![CSS3](https://img.shields.io/badge/CSS3-%231572B6.svg?style=flat&logo=CSS3&logoColor=white)](#)
 [![JavaScript](https://img.shields.io/badge/JavaScript-%23F7DF1E.svg?style=flat&logo=JavaScript&logoColor=white)](#)
 
-[**🌐 Live auf GitHub Pages**](https://dein-name.github.io/Fluegelhorn-Companion/)
+[**🌐 Live auf GitHub Pages**](https://molex2go.github.io/bb-fluegelhorn-jam-helper/)
 
 ---
 
@@ -29,7 +29,7 @@
 
 Öffne die Web-App direkt im Browser:
 
-👉 [**Flügelhorn Companion auf GitHub Pages**](https://dein-name.github.io/Fluegelhorn-Companion/)
+👉 [**Flügelhorn Companion auf GitHub Pages**](https://molex2go.github.io/bb-fluegelhorn-jam-helper/)
 
 > *Kein Download nötig – funktioniert sofort auf jedem Gerät.*
 
@@ -40,8 +40,8 @@
 3. Fertig – keine Installation, keine Abhängigkeiten.
 
 ```bash
-git clone https://github.com/dein-name/Fluegelhorn-Companion.git
-cd Fluegelhorn-Companion
+git clone https://github.com/molex2go/bb-fluegelhorn-jam-helper.git
+cd bb-fluegelhorn-jam-helper
 # index.html im Browser öffnen
 ```
 
