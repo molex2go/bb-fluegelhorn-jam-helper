@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Flügelhorn Companion – B♭ Transposition &amp; Skalen</title>
+<title>Flugelhorn Companion – B♭ Transposition &amp; Scales</title>
 <style>
   :root {
     --bg-primary: #0f1117;
@@ -411,13 +411,13 @@
   <!-- Header -->
   <header class="app-header">
     <span class="horn-icon">🎵</span>
-    <h1>Flügelhorn Companion</h1>
-    <p class="subtitle">B♭-Transposition · Skalen · Griffweisen</p>
+    <h1>Flugelhorn Companion</h1>
+    <p class="subtitle">B♭ Transposition · Scales · Fingerings</p>
   </header>
 
   <!-- Key Selector -->
   <div class="selector-panel">
-    <label>🎹 Backing-Track Tonart (Klingend)</label>
+    <label>🎹 Backing Track Key (Concert Pitch)</label>
     <div class="key-selector-row">
       <select id="keySelect"></select>
     </div>
@@ -426,21 +426,21 @@
   <!-- Transposition Display -->
   <div class="transposition-info" id="transInfo">
     <div class="trans-box">
-      <div class="label">Klingend (YouTube)</div>
+      <div class="label">Concert Pitch (YouTube)</div>
       <div class="value" id="concertKey">–</div>
     </div>
     <div class="trans-arrow">➜</div>
     <div class="trans-box">
-      <div class="label">B♭ Flügelhorn (Transponiert)</div>
+      <div class="label">B♭ Flugelhorn (Transposed)</div>
       <div class="value" id="transposedKey">–</div>
     </div>
   </div>
 
   <!-- Scale Tabs -->
   <div class="scale-tabs" id="scaleTabs">
-    <button class="scale-tab active" data-scale="minorPentatonic">Moll-Pentatonik</button>
-    <button class="scale-tab" data-scale="blues">Blues-Skala</button>
-    <button class="scale-tab" data-scale="major">Dur-Skala</button>
+    <button class="scale-tab active" data-scale="minorPentatonic">Minor Pentatonic</button>
+    <button class="scale-tab" data-scale="blues">Blues Scale</button>
+    <button class="scale-tab" data-scale="major">Major Scale</button>
   </div>
 
   <!-- Scale Info -->
@@ -454,14 +454,14 @@
 
   <!-- Quick Reference: Valve Chart -->
   <div class="ref-section">
-    <h2>📋 Ventiltabelle – B♭ Flügelhorn (Mittelregister)</h2>
+    <h2>📋 Valve Chart – B♭ Flugelhorn (Middle Register)</h2>
     <div class="table-wrapper">
       <table class="ref-table" id="valveTable">
         <thead>
           <tr>
             <th>Note</th>
-            <th>Ventile</th>
-            <th>Grafisch</th>
+            <th>Valves</th>
+            <th>Visual</th>
           </tr>
         </thead>
         <tbody id="valveTableBody"></tbody>
@@ -471,12 +471,12 @@
 
   <!-- All Keys Overview -->
   <div class="overview-section">
-    <h2>🌍 Alle Tonarten auf einen Blick</h2>
+    <h2>🌍 All Keys at a Glance</h2>
     <div class="overview-grid" id="overviewGrid"></div>
   </div>
 
   <footer class="app-footer">
-    Flügelhorn Companion – B♭ Transposition &amp; Skalen-Helfer
+    Flugelhorn Companion – B♭ Transposition &amp; Scale Helper
   </footer>
 </div>
 
@@ -485,62 +485,62 @@
 //  DATA
 // ═══════════════════════════════════════════
 
-// 12 semitones with German names and valve combinations (standard B♭ Flügelhorn)
-// Valve combos from user spec: C=0 D=1-3 Eb=2-3 E=1-2 F=1 F#=2 G=0 Ab=2-3 A=1-2 Bb=1 H=2
-// Chromatic fill: Cis=0-3  Fis=2-3  Gis=0-3
+// 12 semitones with note names and valve combinations (standard B♭ flugelhorn)
+// Valve combos from user spec: C=0 D=1-3 Eb=2-3 E=1-2 F=1 F#=2 G=0 Ab=2-3 A=1-2 Bb=1 B=2
+// Chromatic fill: C#=0-3  F#=2-3  G#=0-3
 const NOTES = [
   { midi: 0,  name: 'C',  alt: '',       valve: '0' },
-  { midi: 1,  name: 'Cis', alt: 'Des',   valve: '0-3' },
+  { midi: 1,  name: 'C#', alt: 'Db',     valve: '0-3' },
   { midi: 2,  name: 'D',  alt: '',       valve: '1-3' },
-  { midi: 3,  name: 'Dis', alt: 'Es',    valve: '2-3' },
+  { midi: 3,  name: 'D#', alt: 'Eb',     valve: '2-3' },
   { midi: 4,  name: 'E',  alt: '',       valve: '1-2' },
   { midi: 5,  name: 'F',  alt: '',       valve: '1' },
-  { midi: 6,  name: 'Fis', alt: 'Ges',   valve: '2-3' },
+  { midi: 6,  name: 'F#', alt: 'Gb',     valve: '2-3' },
   { midi: 7,  name: 'G',  alt: '',       valve: '0' },
-  { midi: 8,  name: 'Gis', alt: 'As',    valve: '0-3' },
+  { midi: 8,  name: 'G#', alt: 'Ab',     valve: '0-3' },
   { midi: 9,  name: 'A',  alt: '',       valve: '1-2' },
-  { midi: 10, name: 'B',  alt: 'B♭',     valve: '1' },
-  { midi: 11, name: 'H',  alt: 'B',      valve: '2' },
+  { midi: 10, name: 'Bb', alt: '',       valve: '1' },
+  { midi: 11, name: 'B',  alt: '',       valve: '2' },
 ];
 
 // Keys: each has major and relative minor
 const KEYS = [
-  { major: 'C-Dur',    minor: 'A-Moll',  rootMidi: 0 },
-  { major: 'Cis-Dur',  minor: 'His-Moll', rootMidi: 1 },
-  { major: 'Des-Dur',  minor: 'B-Moll',  rootMidi: 1 },
-  { major: 'D-Dur',    minor: 'H-Moll',  rootMidi: 2 },
-  { major: 'Dis-Dur',  minor: 'C-Moll',  rootMidi: 3 },
-  { major: 'Es-Dur',   minor: 'C-Moll',  rootMidi: 3 },
-  { major: 'E-Dur',    minor: 'Cis-Moll',rootMidi: 4 },
-  { major: 'F-Dur',    minor: 'D-Moll',  rootMidi: 5 },
-  { major: 'Fis-Dur',  minor: 'Dis-Moll',rootMidi: 6 },
-  { major: 'Ges-Dur',  minor: 'Es-Moll', rootMidi: 6 },
-  { major: 'G-Dur',    minor: 'E-Moll',  rootMidi: 7 },
-  { major: 'Gis-Dur',  minor: 'F-Moll',  rootMidi: 8 },
-  { major: 'As-Dur',   minor: 'F-Moll',  rootMidi: 8 },
-  { major: 'A-Dur',    minor: 'Fis-Moll',rootMidi: 9 },
-  { major: 'B-Dur',    minor: 'G-Moll',  rootMidi: 10 },
-  { major: 'H-Dur',    minor: 'Gis-Moll',rootMidi: 11 },
-  { major: 'C-Dur',    minor: 'A-Moll',  rootMidi: 12 }, // wrap
+  { major: 'C Major',    minor: 'A Minor',  rootMidi: 0 },
+  { major: 'C# Major',   minor: 'A# Minor', rootMidi: 1 },
+  { major: 'Db Major',   minor: 'Bb Minor', rootMidi: 1 },
+  { major: 'D Major',    minor: 'B Minor',  rootMidi: 2 },
+  { major: 'D# Major',   minor: 'C Minor',  rootMidi: 3 },
+  { major: 'Eb Major',   minor: 'C Minor',  rootMidi: 3 },
+  { major: 'E Major',    minor: 'C# Minor', rootMidi: 4 },
+  { major: 'F Major',    minor: 'D Minor',  rootMidi: 5 },
+  { major: 'F# Major',   minor: 'D# Minor', rootMidi: 6 },
+  { major: 'Gb Major',   minor: 'Eb Minor', rootMidi: 6 },
+  { major: 'G Major',    minor: 'E Minor',  rootMidi: 7 },
+  { major: 'G# Major',   minor: 'F Minor',  rootMidi: 8 },
+  { major: 'Ab Major',   minor: 'F Minor',  rootMidi: 8 },
+  { major: 'A Major',    minor: 'F# Minor', rootMidi: 9 },
+  { major: 'Bb Major',   minor: 'G Minor',  rootMidi: 10 },
+  { major: 'B Major',    minor: 'G# Minor', rootMidi: 11 },
+  { major: 'C Major',    minor: 'A Minor',  rootMidi: 12 }, // wrap
 ];
 
 // Scale interval patterns (semitones from root)
 const SCALES = {
   minorPentatonic: {
-    label: 'Moll-Pentatonik',
-    desc: 'Ideal für Blues- und Rock-Solos – 5 Noten, universell einsetzbar',
+    label: 'Minor Pentatonic',
+    desc: 'Perfect for blues & rock solos – 5 notes, universally usable',
     intervals: [0, 3, 5, 7, 10],
     degrees: ['1', 'b3', '4', '5', 'b7']
   },
   blues: {
-    label: 'Blues-Skala',
-    desc: 'Moll-Pentatonik + verminderte Quinte (b5) – der klassische Blues-Sound',
+    label: 'Blues Scale',
+    desc: 'Minor pentatonic + flat fifth (b5) – the classic blues sound',
     intervals: [0, 3, 5, 6, 7, 10],
     degrees: ['1', 'b3', '4', 'b5', '5', 'b7']
   },
   major: {
-    label: 'Dur-Skala',
-    desc: 'Vollständige Dur-Skala – 7 Töne, hell und klar',
+    label: 'Major Scale',
+    desc: 'Complete major scale – 7 notes, bright and clear',
     intervals: [0, 2, 4, 5, 7, 9, 11],
     degrees: ['1', '2', '3', '4', '5', '6', '7']
   }
@@ -548,17 +548,17 @@ const SCALES = {
 
 // Degree names for display
 const DEGREE_NAMES = {
-  '1': 'Grundton',
-  'b1': 'Grundton',
-  '2': 'Große Sekunde',
-  '3': 'Große Terz',
-  'b3': 'Kleine Terz',
-  '4': 'Quarte',
-  'b5': 'Vermind. Quinte',
-  '5': 'Quinte',
-  '6': 'Große Sexte',
-  '7': 'Große Septime',
-  'b7': 'Kleine Septime'
+  '1': 'Root',
+  'b1': 'Root',
+  '2': 'Major 2nd',
+  '3': 'Major 3rd',
+  'b3': 'Minor 3rd',
+  '4': 'Perfect 4th',
+  'b5': 'Diminished 5th',
+  '5': 'Perfect 5th',
+  '6': 'Major 6th',
+  '7': 'Major 7th',
+  'b7': 'Minor 7th'
 };
 
 // ═══════════════════════════════════════════
@@ -659,7 +659,7 @@ function renderScaleInfo() {
   document.getElementById('scaleName').textContent =
     `${transNote.name} ${scale.label}`;
   document.getElementById('scaleDesc').textContent =
-    `${scale.desc} · ${scale.intervals.length} Töne`;
+    `${scale.desc} · ${scale.intervals.length} notes`;
 }
 
 function renderNoteCards() {
@@ -741,8 +741,8 @@ function renderOverview() {
     };
     card.innerHTML = `
       <div class="ov-key">${k.major} / ${k.minor}</div>
-      <div class="ov-trans">Transponiert: ${transKey ? transKey.minor : transNote.name + '-Moll'}</div>
-      <div class="ov-notes">${transNote.name}-Moll Pentatonik: ${noteNames}<br>Ventile: ${valveStrs}</div>
+      <div class="ov-trans">Transposed: ${transKey ? transKey.minor : transNote.name + ' Minor'}</div>
+      <div class="ov-notes">${transNote.name} Minor Pentatonic: ${noteNames}<br>Valves: ${valveStrs}</div>
     `;
     grid.appendChild(card);
   });
